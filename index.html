@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多形状旋轮线可视化</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .slider-thumb::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .slider-thumb::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        canvas {
+            touch-action: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold text-slate-900">几何可视化：多形状旋轮线</h1>
+                <p class="text-xs text-slate-500">Polygonal Epitrochoid & Hypotrochoid</p>
+            </div>
+            <div class="flex space-x-2">
+                <button id="btn-epi" onclick="setMode('epitrochoid')" class="px-4 py-1.5 text-sm rounded-full bg-blue-600 text-white font-medium transition hover:bg-blue-700">外旋 (External)</button>
+                <button id="btn-hypo" onclick="setMode('hypotrochoid')" class="px-4 py-1.5 text-sm rounded-full bg-slate-200 text-slate-700 font-medium transition hover:bg-slate-300">内旋 (Internal)</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-4">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Visualization Panel (Canvas) -->
+            <div class="lg:col-span-2 flex flex-col gap-4">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden relative border border-slate-200 h-[500px]">
+                    <canvas id="simCanvas" class="w-full h-full block"></canvas>
+                    
+                    <!-- Overlay Legend -->
+                    <div class="absolute top-4 left-4 bg-white/80 backdrop-blur-sm p-3 rounded-lg border border-slate-200 text-xs shadow-sm pointer-events-none select-none z-10">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="w-3 h-3 rounded-full bg-slate-300 border border-slate-400"></span>
+                            <span>定轨 (Stator)</span>
+                        </div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="w-3 h-3 rounded-full bg-blue-200 border border-blue-500"></span>
+                            <span>动轮 (Rotor)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                            <span>绘图点 (Pen)</span>
+                        </div>
+                    </div>
+
+                    <!-- Instant Action Overlay -->
+                    <div class="absolute top-4 right-4 flex flex-col gap-2 z-10">
+                        <button onclick="generateInstant()" class="flex items-center gap-2 px-3 py-2 bg-white/90 backdrop-blur hover:bg-blue-50 text-blue-600 border border-blue-200 rounded-lg text-xs font-bold shadow-sm transition" title="计算完整周期并瞬间画完">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            瞬间完成
+                        </button>
+                        <button onclick="saveToHistory()" class="flex items-center gap-2 px-3 py-2 bg-white/90 backdrop-blur hover:bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-lg text-xs font-bold shadow-sm transition" title="保存当前画作到历史记录">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            保存记录
+                        </button>
+                    </div>
+                </div>
+
+                <!-- History Strip -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+                    <h3 class="text-sm font-bold text-slate-700 mb-3 flex justify-between items-center">
+                        <span>历史记录 (点击恢复)</span>
+                        <button onclick="clearHistory()" class="text-xs text-red-400 hover:text-red-600">清空</button>
+                    </h3>
+                    <div id="history-container" class="flex gap-3 overflow-x-auto pb-2 snap-x">
+                        <div class="text-xs text-slate-400 italic py-4 px-2">暂无记录...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls & Info Panel -->
+            <div class="space-y-6 h-[650px] overflow-y-auto pr-2">
+                
+                <!-- Controls -->
+                <div class="bg-white p-5 rounded-xl shadow-lg border border-slate-200">
+                    <h2 class="text-lg font-semibold mb-4 flex items-center text-slate-800">
+                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                        形状与参数
+                    </h2>
+
+                    <!-- Shapes Selection -->
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">定轨形状 (Stator)</label>
+                            <select id="input-stator-shape" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg p-2">
+                                <option value="circle">圆形 (Circle)</option>
+                                <option value="ellipse">椭圆 (Ellipse)</option>
+                                <option value="track">跑道 (Track)</option>
+                                <option value="triangle">三角形 (Triangle)</option>
+                                <option value="square">正方形 (Square)</option>
+                                <option value="pentagon">五边形 (Pentagon)</option>
+                                <option value="hexagon">六边形 (Hexagon)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">动轮形状 (Rotor)</label>
+                            <select id="input-rotor-shape" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg p-2">
+                                <option value="circle">圆形 (Circle)</option>
+                                <option value="triangle">三角形 (Triangle)</option>
+                                <option value="square">正方形 (Square)</option>
+                                <option value="pentagon">五边形 (Pentagon)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Color Scheme -->
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-slate-500 mb-1">颜色方案</label>
+                        <select id="input-color" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg p-2">
+                            <option value="classic">经典蓝色</option>
+                            <option value="rainbow">彩虹渐变</option>
+                            <option value="sunset">日落渐变</option>
+                            <option value="ocean">海洋蓝绿</option>
+                            <option value="neon">霓虹赛博</option>
+                            <option value="warm">暖色调</option>
+                            <option value="mono">黑白极简</option>
+                        </select>
+                    </div>
+                    
+                    <!-- R Slider -->
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <label class="text-sm font-medium text-slate-600">定轨半径/尺寸 (R)</label>
+                            <span id="val-R" class="text-sm font-mono font-bold text-blue-600">100</span>
+                        </div>
+                        <input type="range" id="input-R" min="30" max="150" value="100" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                    </div>
+
+                    <!-- r Slider -->
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <label class="text-sm font-medium text-slate-600">动轮半径 (r)</label>
+                            <span id="val-r" class="text-sm font-mono font-bold text-blue-600">30</span>
+                        </div>
+                        <input type="range" id="input-r" min="10" max="100" value="30" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                    </div>
+
+                    <!-- d Slider -->
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-1">
+                            <label class="text-sm font-medium text-slate-600">绘图点距离 (d)</label>
+                            <span id="val-d" class="text-sm font-mono font-bold text-blue-600">50</span>
+                        </div>
+                        <input type="range" id="input-d" min="0" max="150" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                    </div>
+
+                    <!-- Speed Slider -->
+                    <div class="mb-4 pt-4 border-t border-slate-100">
+                        <div class="flex justify-between mb-1">
+                            <label class="text-sm font-medium text-slate-600">动画速度</label>
+                        </div>
+                        <input type="range" id="input-speed" min="1" max="50" value="5" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                    </div>
+
+                    <div class="flex gap-2 mt-4">
+                        <button onclick="handleReset()" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition">
+                            重置画布
+                        </button>
+                        <button onclick="handleRandomize()" class="flex-1 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition">
+                            随机参数
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Explanation -->
+                <div class="bg-white p-5 rounded-xl shadow-lg border border-slate-200">
+                    <h2 id="info-title" class="text-lg font-semibold mb-2 text-slate-800">外旋 (External)</h2>
+                    <p id="info-desc" class="text-sm text-slate-600 leading-relaxed mb-2">
+                        动轮在定轨外部滚动。
+                    </p>
+                    <div class="text-xs text-slate-500 bg-slate-50 p-2 rounded border border-slate-100">
+                        <strong>提示：</strong> 尝试选择“椭圆”或“跑道”形状。由于曲率变化，动轮的自转速度会自动调整以保持纯滚动不打滑。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        let dpr = window.devicePixelRatio || 1;
+        
+        let state = {
+            mode: 'epitrochoid', 
+            statorShape: 'circle', 
+            rotorShape: 'circle',  
+            colorScheme: 'classic',
+            R: 100, // Stator Size
+            r: 30,  // Rotor Radius
+            d: 50,  // Pen distance
+            speed: 5,
+            totalDistance: 0, 
+            pathPoints: [],
+            isRunning: true,
+            history: [],
+            // Cache for Ellipse
+            ellipseLUT: null,
+            ellipsePerimeter: 0
+        };
+
+        // --- DOM & Init ---
+        const inputs = {
+            R: document.getElementById('input-R'),
+            r: document.getElementById('input-r'),
+            d: document.getElementById('input-d'),
+            speed: document.getElementById('input-speed'),
+            color: document.getElementById('input-color'),
+            statorShape: document.getElementById('input-stator-shape'),
+            rotorShape: document.getElementById('input-rotor-shape')
+        };
+        
+        const displays = {
+            R: document.getElementById('val-R'),
+            r: document.getElementById('val-r'),
+            d: document.getElementById('val-d')
+        };
+
+        const buttons = {
+            epi: document.getElementById('btn-epi'),
+            hypo: document.getElementById('btn-hypo')
+        };
+
+        const info = {
+            title: document.getElementById('info-title'),
+            desc: document.getElementById('info-desc')
+        };
+
+        const historyContainer = document.getElementById('history-container');
+
+        function init() {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            Object.keys(inputs).forEach(key => {
+                inputs[key].addEventListener('input', (e) => {
+                    const val = e.target.value;
+                    if (key === 'color') state.colorScheme = val;
+                    else if (key === 'statorShape') { 
+                        state.statorShape = val; 
+                        if (state.statorShape === 'ellipse') buildEllipseLUT();
+                        resetPath(); 
+                    }
+                    else if (key === 'rotorShape') { state.rotorShape = val; resetPath(); }
+                    else {
+                        state[key] = parseInt(val);
+                        if (displays[key]) displays[key].textContent = state[key];
+                        if (key === 'R' && state.statorShape === 'ellipse') buildEllipseLUT();
+                        if (key !== 'speed') resetPath();
+                    }
+                });
+            });
+            animate();
+        }
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            dpr = window.devicePixelRatio || 1;
+            canvas.width = container.clientWidth * dpr;
+            canvas.height = container.clientHeight * dpr;
+        }
+
+        function resetPath() {
+            state.totalDistance = 0;
+            state.pathPoints = [];
+            state.isRunning = true;
+        }
+
+        function setMode(mode) {
+            state.mode = mode;
+            resetPath();
+            
+            if (mode === 'epitrochoid') {
+                buttons.epi.className = "px-4 py-1.5 text-sm rounded-full bg-blue-600 text-white font-medium transition hover:bg-blue-700";
+                buttons.hypo.className = "px-4 py-1.5 text-sm rounded-full bg-slate-200 text-slate-700 font-medium transition hover:bg-slate-300";
+                info.title.textContent = "外旋 (External)";
+                info.desc.textContent = "动轮在定轨外部滚动。";
+            } else {
+                buttons.epi.className = "px-4 py-1.5 text-sm rounded-full bg-slate-200 text-slate-700 font-medium transition hover:bg-slate-300";
+                buttons.hypo.className = "px-4 py-1.5 text-sm rounded-full bg-blue-600 text-white font-medium transition hover:bg-blue-700";
+                info.title.textContent = "内旋 (Internal)";
+                info.desc.textContent = "动轮在定轨内部滚动。";
+            }
+        }
+
+        function handleReset() {
+            if (state.pathPoints.length > 200) saveToHistory();
+            resetPath();
+        }
+
+        function handleRandomize() {
+            if (state.pathPoints.length > 200) saveToHistory();
+            
+            state.R = Math.floor(Math.random() * 100) + 40;
+            state.r = Math.floor(Math.random() * 50) + 15;
+            state.d = Math.floor(Math.random() * 100) + 10;
+            
+            const shapes = ['circle', 'ellipse', 'track', 'triangle', 'square', 'pentagon'];
+            state.statorShape = shapes[Math.floor(Math.random() * shapes.length)]; 
+            
+            if (state.statorShape === 'ellipse') buildEllipseLUT();
+
+            const colors = ['classic', 'rainbow', 'sunset', 'ocean', 'neon', 'warm'];
+            state.colorScheme = colors[Math.floor(Math.random() * colors.length)];
+            
+            // UI Update
+            inputs.R.value = state.R; displays.R.textContent = state.R;
+            inputs.r.value = state.r; displays.r.textContent = state.r;
+            inputs.d.value = state.d; displays.d.textContent = state.d;
+            inputs.statorShape.value = state.statorShape;
+            inputs.color.value = state.colorScheme;
+            
+            resetPath();
+        }
+
+        // --- GEOMETRY ENGINE ---
+
+        // 1. ELLIPSE LUT BUILDER
+        // Maps cumulative distance to position and normal angle
+        function buildEllipseLUT() {
+            const a = state.R;
+            const b = state.R * 0.7; // Fixed Aspect Ratio
+            const segments = 2000; // High res for smoothness
+            const lut = [];
+            let totalLen = 0;
+            
+            let prevX = a; // at theta = 0
+            let prevY = 0;
+            
+            for (let i = 0; i <= segments; i++) {
+                const t = (i / segments) * Math.PI * 2;
+                const x = a * Math.cos(t);
+                const y = b * Math.sin(t);
+                
+                if (i > 0) {
+                    const dx = x - prevX;
+                    const dy = y - prevY;
+                    totalLen += Math.sqrt(dx*dx + dy*dy);
+                }
+                
+                // Tangent angle
+                // dx/dt = -a sin t, dy/dt = b cos t
+                const tx = -a * Math.sin(t);
+                const ty = b * Math.cos(t);
+                const normalAngle = Math.atan2(ty, tx) - Math.PI/2; // Pointing Out
+                
+                lut.push({
+                    dist: totalLen,
+                    x: x,
+                    y: y,
+                    normal: normalAngle
+                });
+                
+                prevX = x;
+                prevY = y;
+            }
+            
+            // Normalize distances to be uniform for O(1) lookup?
+            // Actually, simpler: Resample into uniform distance steps
+            const uniformLUT = [];
+            const lookupSize = 1000;
+            let currentDistIdx = 0;
+            
+            for (let j = 0; j <= lookupSize; j++) {
+                const targetDist = (j / lookupSize) * totalLen;
+                
+                // Find point in raw lut
+                while (currentDistIdx < lut.length - 1 && lut[currentDistIdx+1].dist < targetDist) {
+                    currentDistIdx++;
+                }
+                
+                const p1 = lut[currentDistIdx];
+                const p2 = lut[currentDistIdx+1] || p1;
+                
+                // Interpolate
+                let t = 0;
+                const segLen = p2.dist - p1.dist;
+                if (segLen > 0.0001) t = (targetDist - p1.dist) / segLen;
+                
+                uniformLUT.push({
+                    x: p1.x + (p2.x - p1.x) * t,
+                    y: p1.y + (p2.y - p1.y) * t,
+                    normal: interpolateAngle(p1.normal, p2.normal, t)
+                });
+            }
+            
+            state.ellipseLUT = uniformLUT;
+            state.ellipsePerimeter = totalLen;
+        }
+        
+        function interpolateAngle(a1, a2, t) {
+            // Handle wrap around -PI/PI
+            let diff = a2 - a1;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            return a1 + diff * t;
+        }
+
+        function getPolyProps(shape, R) {
+            let sides = 3;
+            if (shape === 'square') sides = 4;
+            if (shape === 'pentagon') sides = 5;
+            if (shape === 'hexagon') sides = 6;
+            const sideLen = 2 * R * Math.sin(Math.PI / sides);
+            const apothem = R * Math.cos(Math.PI / sides);
+            return { sides, sideLen, apothem };
+        }
+
+        // Core Function: Calculate State
+        function calculateState(distance) {
+            let rc = {x:0, y:0}; // Rotor Center
+            let ra = 0;          // Rotor Angle
+            
+            // --- CIRCLE ---
+            if (state.statorShape === 'circle') {
+                const theta = distance / state.R; 
+                if (state.mode === 'epitrochoid') {
+                    rc.x = (state.R + state.r) * Math.cos(theta);
+                    rc.y = (state.R + state.r) * Math.sin(theta);
+                    ra = theta * (1 + state.R / state.r);
+                } else {
+                    rc.x = (state.R - state.r) * Math.cos(theta);
+                    rc.y = (state.R - state.r) * Math.sin(theta);
+                    ra = theta * (1 - state.R / state.r);
+                }
+            } 
+            
+            // --- ELLIPSE ---
+            else if (state.statorShape === 'ellipse') {
+                if (!state.ellipseLUT) buildEllipseLUT();
+                
+                // 1. Find Position and Normal on Stator
+                let dMod = distance % state.ellipsePerimeter;
+                if (dMod < 0) dMod += state.ellipsePerimeter;
+                
+                const lutIndex = (dMod / state.ellipsePerimeter) * (state.ellipseLUT.length - 1);
+                const i = Math.floor(lutIndex);
+                const t = lutIndex - i;
+                const p1 = state.ellipseLUT[i];
+                const p2 = state.ellipseLUT[i+1];
+                
+                // Interpolated Stator Point
+                const sx = p1.x + (p2.x - p1.x) * t;
+                const sy = p1.y + (p2.y - p1.y) * t;
+                const normal = interpolateAngle(p1.normal, p2.normal, t);
+                
+                if (state.mode === 'epitrochoid') {
+                    // Rotor Center: offset by r along normal
+                    rc.x = sx + state.r * Math.cos(normal);
+                    rc.y = sy + state.r * Math.sin(normal);
+                    // Rotation: accumulated distance / r + orientation of contact point
+                    ra = (distance / state.r) + normal;
+                } else {
+                    // Internal
+                    rc.x = sx - state.r * Math.cos(normal);
+                    rc.y = sy - state.r * Math.sin(normal);
+                    ra = -(distance / state.r) + normal + Math.PI;
+                }
+            } 
+            
+            // --- TRACK (STADIUM) ---
+            else if (state.statorShape === 'track') {
+                // Geometry: Two semicircles radius r_bend, connected by straights length L
+                const r_bend = state.R * 0.6;
+                const L = state.R * 1.2;
+                const perimeter = 2 * L + 2 * Math.PI * r_bend;
+                
+                let dMod = distance % perimeter;
+                if (dMod < 0) dMod += perimeter;
+                
+                let sx, sy, normal;
+                
+                // Segment 1: Bottom Straight (R -> L)
+                if (dMod < L) { 
+                    sx = L/2 - dMod;
+                    sy = r_bend;
+                    normal = Math.PI/2; 
+                } 
+                // Segment 2: Left Arc (PI*r)
+                else if (dMod < L + Math.PI * r_bend) { 
+                    const ad = dMod - L;
+                    const ang = Math.PI/2 + ad/r_bend;
+                    sx = -L/2 + r_bend * Math.cos(ang);
+                    sy = r_bend * Math.sin(ang);
+                    normal = ang;
+                } 
+                // Segment 3: Top Straight (L -> R)
+                else if (dMod < 2*L + Math.PI * r_bend) { 
+                    const sd = dMod - (L + Math.PI*r_bend);
+                    sx = -L/2 + sd;
+                    sy = -r_bend;
+                    normal = -Math.PI/2; // 3PI/2 is -PI/2
+                } 
+                // Segment 4: Right Arc
+                else { 
+                    const ad = dMod - (2*L + Math.PI*r_bend);
+                    const ang = -Math.PI/2 + ad/r_bend;
+                    sx = L/2 + r_bend * Math.cos(ang);
+                    sy = r_bend * Math.sin(ang);
+                    normal = ang;
+                }
+                
+                if (state.mode === 'epitrochoid') {
+                    rc.x = sx + state.r * Math.cos(normal);
+                    rc.y = sy + state.r * Math.sin(normal);
+                    ra = (distance / state.r) + normal;
+                } else {
+                    // Internal Track
+                    rc.x = sx - state.r * Math.cos(normal);
+                    rc.y = sy - state.r * Math.sin(normal);
+                    ra = -(distance / state.r) + normal + Math.PI;
+                }
+            }
+
+            // --- POLYGONS ---
+            else {
+                const props = getPolyProps(state.statorShape, state.R);
+                
+                if (state.mode === 'epitrochoid') {
+                    const cornerAngle = (2 * Math.PI) / props.sides;
+                    const cornerArcLen = state.r * cornerAngle;
+                    const totalSegmentLen = props.sideLen + cornerArcLen;
+                    const perimeter = props.sides * totalSegmentLen;
+                    
+                    let distMod = distance % perimeter;
+                    if (distMod < 0) distMod += perimeter;
+                    
+                    const segIndex = Math.floor(distMod / totalSegmentLen);
+                    const segLocalDist = distMod % totalSegmentLen;
+                    
+                    const angleStep = (2 * Math.PI) / props.sides;
+                    const angV1 = segIndex * angleStep; 
+                    const angV2 = (segIndex + 1) * angleStep;
+                    
+                    const v1 = { x: state.R * Math.cos(angV1), y: state.R * Math.sin(angV1) };
+                    const v2 = { x: state.R * Math.cos(angV2), y: state.R * Math.sin(angV2) };
+                    const midAngle = (angV1 + angV2) / 2;
+                    const normalV = { x: Math.cos(midAngle), y: Math.sin(midAngle) };
+                    
+                    if (segLocalDist < props.sideLen) {
+                        const t = segLocalDist / props.sideLen;
+                        const px = v1.x + (v2.x - v1.x) * t;
+                        const py = v1.y + (v2.y - v1.y) * t;
+                        rc.x = px + normalV.x * state.r;
+                        rc.y = py + normalV.y * state.r;
+                        ra = (distance / state.r) + midAngle;
+                    } else {
+                        const cornerLocalDist = segLocalDist - props.sideLen;
+                        const currentArcAngle = (cornerLocalDist / cornerArcLen) * cornerAngle;
+                        const currentNormalAngle = midAngle + currentArcAngle;
+                        rc.x = v2.x + Math.cos(currentNormalAngle) * state.r;
+                        rc.y = v2.y + Math.sin(currentNormalAngle) * state.r;
+                        ra = (distance / state.r) + currentNormalAngle;
+                    }
+                } else {
+                    // Internal Poly
+                    const innerApothem = props.apothem - state.r;
+                    const scale = innerApothem / props.apothem;
+                    const perimeter = props.sides * props.sideLen * scale;
+                    
+                    const innerSideLen = props.sideLen * scale;
+                    let distMod = distance % perimeter;
+                    if (distMod < 0) distMod += perimeter;
+                    
+                    const segIndex = Math.floor(distMod / innerSideLen);
+                    const t = (distMod % innerSideLen) / innerSideLen;
+                    
+                    const angleStep = (2 * Math.PI) / props.sides;
+                    const angV1 = segIndex * angleStep;
+                    const angV2 = (segIndex + 1) * angleStep;
+                    
+                    const R_in = state.R * scale;
+                    const v1 = { x: R_in * Math.cos(angV1), y: R_in * Math.sin(angV1) };
+                    const v2 = { x: R_in * Math.cos(angV2), y: R_in * Math.sin(angV2) };
+                    
+                    rc.x = v1.x + (v2.x - v1.x) * t;
+                    rc.y = v1.y + (v2.y - v1.y) * t;
+                    
+                    const midAngle = (angV1 + angV2) / 2 + Math.PI; 
+                    ra = -(distance / state.r) + midAngle;
+                }
+            }
+
+            const pen = {
+                x: rc.x + state.d * Math.cos(ra),
+                y: rc.y + state.d * Math.sin(ra)
+            };
+
+            return { rc, ra, pen };
+        }
+
+        function drawStator(ctx) {
+            ctx.beginPath();
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            
+            if (state.statorShape === 'circle') {
+                ctx.arc(0, 0, state.R, 0, Math.PI * 2);
+            } else if (state.statorShape === 'ellipse') {
+                ctx.ellipse(0, 0, state.R, state.R * 0.7, 0, 0, Math.PI * 2);
+            } else if (state.statorShape === 'track') {
+                const r_bend = state.R * 0.6;
+                const L = state.R * 1.2;
+                // Draw Track: Two lines and two arcs
+                // Right Arc
+                ctx.arc(L/2, 0, r_bend, -Math.PI/2, Math.PI/2);
+                // Bottom Line
+                ctx.lineTo(-L/2, r_bend);
+                // Left Arc
+                ctx.arc(-L/2, 0, r_bend, Math.PI/2, 3*Math.PI/2);
+                // Top Line
+                ctx.lineTo(L/2, -r_bend);
+            } else {
+                const props = getPolyProps(state.statorShape, state.R);
+                const angleStep = (2 * Math.PI) / props.sides;
+                ctx.moveTo(state.R, 0);
+                for (let i = 1; i <= props.sides; i++) {
+                    ctx.lineTo(state.R * Math.cos(i * angleStep), state.R * Math.sin(i * angleStep));
+                }
+            }
+            ctx.stroke();
+        }
+
+        function drawRotor(ctx, rc, ra) {
+            ctx.save();
+            ctx.translate(rc.x, rc.y);
+            ctx.rotate(ra);
+            
+            ctx.beginPath();
+            ctx.strokeStyle = '#60a5fa';
+            ctx.lineWidth = 1;
+            
+            if (state.rotorShape === 'circle') {
+                ctx.arc(0, 0, state.r, 0, Math.PI * 2);
+            } else {
+                let rsides = 3;
+                if (state.rotorShape === 'square') rsides = 4;
+                if (state.rotorShape === 'pentagon') rsides = 5;
+                const rStep = (2 * Math.PI) / rsides;
+                
+                ctx.moveTo(state.r, 0);
+                for (let i = 1; i <= rsides; i++) {
+                    ctx.lineTo(state.r * Math.cos(i * rStep), state.r * Math.sin(i * rStep));
+                }
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(96, 165, 250, 0.3)';
+                ctx.arc(0, 0, state.r, 0, Math.PI * 2);
+            }
+            
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(96, 165, 250, 0.1)';
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.fillStyle = '#3b82f6';
+            ctx.arc(0, 0, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.strokeStyle = '#ef4444';
+            ctx.moveTo(0, 0);
+            ctx.lineTo(state.d, 0); 
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.fillStyle = '#ef4444';
+            ctx.arc(state.d, 0, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function getPathColor(index, total, scheme) {
+            if (scheme === 'mono') return '#000000';
+            if (scheme === 'classic') return state.mode === 'epitrochoid' ? '#2563eb' : '#db2777';
+            
+            let hue = 0;
+            const p = (index % 2000) / 2000; 
+            
+            switch(scheme) {
+                case 'rainbow': hue = (index * 0.2) % 360; break;
+                case 'sunset': hue = 320 + p * 85; if(hue>360) hue-=360; break;
+                case 'ocean': hue = 170 + p * 90; break;
+                case 'neon': hue = (index * 0.8) % 360; break;
+                case 'warm': hue = (index * 0.1) % 60; break;
+            }
+            return `hsl(${hue}, ${scheme === 'neon' ? '100%' : '80%'}, 50%)`;
+        }
+
+        function animate() {
+            if (!state.isRunning) {
+                drawFrame();
+                requestAnimationFrame(animate);
+                return;
+            }
+
+            const stepSize = 1.0; 
+            const steps = Math.ceil(state.speed * 2);
+            
+            for(let i=0; i<steps; i++) {
+                state.totalDistance += stepSize;
+                const s = calculateState(state.totalDistance);
+                state.pathPoints.push(s.pen);
+            }
+            
+            if (state.pathPoints.length > 15000) state.pathPoints.splice(0, steps);
+
+            drawFrame();
+            requestAnimationFrame(animate);
+        }
+
+        function drawFrame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const s = calculateState(state.totalDistance);
+            
+            ctx.save();
+            ctx.scale(dpr, dpr);
+            const w = canvas.width / dpr;
+            const h = canvas.height / dpr;
+            ctx.translate(w/2, h/2);
+
+            drawStator(ctx);
+
+            if (state.pathPoints.length > 1) {
+                ctx.lineWidth = 1.5;
+                ctx.lineJoin = 'round';
+                ctx.lineCap = 'round';
+                
+                if (['classic', 'mono'].includes(state.colorScheme)) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = getPathColor(0, 0, state.colorScheme);
+                    ctx.moveTo(state.pathPoints[0].x, state.pathPoints[0].y);
+                    for (let i = 1; i < state.pathPoints.length; i++) {
+                        ctx.lineTo(state.pathPoints[i].x, state.pathPoints[i].y);
+                    }
+                    ctx.stroke();
+                } else {
+                    const batch = 40;
+                    if (state.colorScheme === 'neon') {
+                        ctx.shadowBlur = 6;
+                        ctx.globalCompositeOperation = 'screen';
+                    }
+                    for(let i=0; i<state.pathPoints.length-1; i+=batch) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = getPathColor(i, 0, state.colorScheme);
+                        if(state.colorScheme === 'neon') ctx.shadowColor = ctx.strokeStyle;
+                        
+                        ctx.moveTo(state.pathPoints[i].x, state.pathPoints[i].y);
+                        const end = Math.min(i+batch, state.pathPoints.length);
+                        for(let j=i+1; j<end; j++) {
+                            ctx.lineTo(state.pathPoints[j].x, state.pathPoints[j].y);
+                        }
+                        if(end < state.pathPoints.length) ctx.lineTo(state.pathPoints[end].x, state.pathPoints[end].y);
+                        ctx.stroke();
+                    }
+                    ctx.shadowBlur = 0;
+                    ctx.globalCompositeOperation = 'source-over';
+                }
+            }
+
+            drawRotor(ctx, s.rc, s.ra);
+            ctx.restore();
+        }
+        
+        function generateInstant() {
+            state.pathPoints = [];
+            state.totalDistance = 0;
+            
+            // Estimation
+            let maxDist = 0;
+            if (['circle', 'ellipse', 'track'].includes(state.statorShape)) {
+                 maxDist = 2 * Math.PI * state.R * 60; 
+            } else {
+                const p = getPolyProps(state.statorShape, state.R);
+                maxDist = p.sides * p.sideLen * 60; 
+            }
+            
+            const limit = 40000;
+            const actualStep = maxDist / limit > 1.0 ? maxDist / limit : 1.0;
+            
+            for (let d = 0; d < maxDist; d += actualStep) {
+                const s = calculateState(d);
+                state.pathPoints.push(s.pen);
+            }
+            
+            state.totalDistance = maxDist;
+            state.isRunning = false;
+            drawFrame();
+        }
+
+        function saveToHistory() {
+            if (state.pathPoints.length < 50) return;
+            
+            const tCanvas = document.createElement('canvas');
+            tCanvas.width = 150; tCanvas.height = 100;
+            const tCtx = tCanvas.getContext('2d');
+            tCtx.fillStyle = '#fff'; tCtx.fillRect(0,0,150,100);
+            tCtx.translate(75, 50);
+            tCtx.scale(0.12, 0.12);
+            
+            tCtx.beginPath();
+            tCtx.strokeStyle = state.colorScheme === 'mono' ? '#000' : '#ec4899';
+            tCtx.lineWidth = 5;
+            const step = Math.ceil(state.pathPoints.length / 300);
+            if (state.pathPoints.length > 0) {
+                tCtx.moveTo(state.pathPoints[0].x, state.pathPoints[0].y);
+                for(let i=1; i<state.pathPoints.length; i+=step) tCtx.lineTo(state.pathPoints[i].x, state.pathPoints[i].y);
+                tCtx.stroke();
+            }
+
+            const record = {
+                id: Date.now(),
+                img: tCanvas.toDataURL(),
+                config: { ...state, pathPoints: [], ellipseLUT: null } 
+            };
+            
+            state.history.unshift(record);
+            updateHistoryUI();
+        }
+
+        function updateHistoryUI() {
+            if (state.history.length === 0) {
+                historyContainer.innerHTML = '<div class="text-xs text-slate-400 italic py-4 px-2">暂无记录...</div>';
+                return;
+            }
+            historyContainer.innerHTML = state.history.map(h => `
+                <div class="flex-none w-28 bg-white rounded border border-slate-200 cursor-pointer hover:border-blue-400 transition snap-start overflow-hidden" onclick="loadHistory(${h.id})">
+                    <img src="${h.img}" class="w-full h-16 object-contain p-1">
+                    <div class="bg-slate-50 p-1 text-[10px] text-center text-slate-500 border-t truncate">
+                        ${h.config.statorShape} / ${h.config.rotorShape}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.loadHistory = function(id) {
+            const h = state.history.find(x => x.id === id);
+            if (!h) return;
+            
+            const { R, r, d, mode, statorShape, rotorShape, colorScheme } = h.config;
+            state.R = R; state.r = r; state.d = d;
+            state.mode = mode;
+            state.statorShape = statorShape;
+            state.rotorShape = rotorShape;
+            state.colorScheme = colorScheme;
+            
+            inputs.R.value = R; displays.R.textContent = R;
+            inputs.r.value = r; displays.r.textContent = r;
+            inputs.d.value = d; displays.d.textContent = d;
+            inputs.statorShape.value = statorShape;
+            inputs.rotorShape.value = rotorShape;
+            inputs.color.value = colorScheme;
+            
+            if (statorShape === 'ellipse') buildEllipseLUT();
+            setMode(mode); 
+            state.isRunning = true;
+        };
+
+        function clearHistory() {
+            state.history = [];
+            updateHistoryUI();
+        }
+
+        // First run
+        if (state.statorShape === 'ellipse') buildEllipseLUT();
+        init();
+    </script>
+</body>
+</html>
