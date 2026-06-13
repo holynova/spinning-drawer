@@ -591,8 +591,8 @@
         }
 
         body.dark-mode {
-            --bg-base: #000000;
-            --bg-surface: #1d1d1f;
+            --bg-base: #111318;
+            --bg-surface: #1c1f26;
             --text-primary: #f5f5f7;
             --text-secondary: #a1a1a6;
             --border-light: #3a3a3c;
@@ -606,6 +606,10 @@
             background: #f5f5f7;
         }
 
+        body.dark-mode .workspace {
+            background: #111318;
+        }
+
         .canvas-stage {
             position: absolute;
             inset: 0;
@@ -613,7 +617,7 @@
         }
 
         body.dark-mode .canvas-stage {
-            background: #0b0b0d;
+            background: #12151b;
         }
 
         .canvas-stage canvas {
@@ -656,14 +660,14 @@
             top: 18px;
             right: 18px;
             z-index: 30;
-            width: min(380px, calc(100vw - 36px));
+            width: min(336px, calc(100vw - 36px));
             max-height: calc(100vh - 36px);
             overflow: hidden;
             border: 1px solid rgba(210, 210, 215, 0.92);
-            border-radius: 24px;
-            background: rgba(255, 255, 255, 0.78);
-            backdrop-filter: blur(26px);
-            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.11);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.84);
+            backdrop-filter: blur(24px);
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.1);
             transition: width 240ms var(--ease-standard), border-radius 240ms var(--ease-standard);
         }
 
@@ -680,26 +684,27 @@
         }
 
         .panel-header {
-            min-height: 56px;
-            padding: 0 10px 0 18px;
+            min-height: 48px;
+            padding: 0 8px 0 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 10px;
+            border-bottom: 1px solid rgba(210, 210, 215, 0.72);
         }
 
         .panel-title {
             margin: 0;
             font-family: var(--sf-display);
-            font-size: 18px;
+            font-size: 16px;
             line-height: 1.2;
             font-weight: 600;
             white-space: nowrap;
         }
 
         .panel-toggle {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -721,6 +726,7 @@
 
         .floating-panel.is-collapsed .panel-header {
             padding: 10px;
+            border-bottom: 0;
         }
 
         .floating-panel.is-collapsed .panel-toggle svg {
@@ -728,25 +734,25 @@
         }
 
         .panel-content {
-            max-height: calc(100vh - 100px);
+            max-height: calc(100vh - 84px);
             overflow-y: auto;
-            padding: 0 18px 18px;
+            padding: 0 12px;
         }
 
         .panel-section {
-            padding: 18px 0;
-            border-top: 1px solid rgba(210, 210, 215, 0.8);
+            padding: 12px 0;
+            border-top: 1px solid rgba(210, 210, 215, 0.72);
         }
 
         .panel-section:first-child {
             border-top: 0;
-            padding-top: 4px;
+            padding-top: 10px;
         }
 
         .panel-section-title {
-            margin: 0 0 12px;
+            margin: 0 0 8px;
             color: var(--text-secondary);
-            font-size: 11px;
+            font-size: 10px;
             line-height: 1.3;
             font-weight: 700;
             text-transform: uppercase;
@@ -756,7 +762,7 @@
         .shape-grid,
         .color-grid {
             display: grid;
-            gap: 8px;
+            gap: 6px;
         }
 
         .segmented-radio {
@@ -793,6 +799,17 @@
             transition: border-color 200ms var(--ease-standard), background 200ms var(--ease-standard), color 200ms var(--ease-standard), transform 200ms var(--ease-standard);
         }
 
+        .mode-pill span,
+        .interface-pill,
+        .shape-tile span,
+        .color-tile span,
+        .panel-action {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         body.dark-mode .mode-pill,
         body.dark-mode .interface-pill,
         body.dark-mode .shape-tile,
@@ -802,16 +819,45 @@
 
         .mode-pill,
         .interface-pill {
-            min-height: 40px;
+            min-height: 34px;
             border-radius: 999px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
+            gap: 6px;
+        }
+
+        .interface-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 8px;
         }
 
+        .micro-control {
+            min-width: 0;
+        }
+
+        .micro-control-label {
+            display: block;
+            margin: 0 0 5px;
+            color: var(--text-secondary);
+            font-size: 10px;
+            line-height: 1.2;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .micro-control .segmented-radio {
+            gap: 4px;
+        }
+
+        .micro-control .interface-pill {
+            min-height: 26px;
+            font-size: 10px;
+        }
+
         .mode-pill svg {
-            width: 36px;
-            height: 22px;
+            width: 30px;
+            height: 18px;
             stroke: currentColor;
             fill: none;
             stroke-width: 1.8;
@@ -826,21 +872,21 @@
         }
 
         .shape-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(5, minmax(0, 1fr));
         }
 
         .shape-tile {
-            min-height: 78px;
+            min-height: 54px;
             flex-direction: column;
-            gap: 7px;
-            border-radius: 16px;
-            font-size: 11px;
+            gap: 4px;
+            border-radius: 10px;
+            font-size: 10px;
             font-weight: 600;
         }
 
         .shape-tile svg {
-            width: 34px;
-            height: 34px;
+            width: 24px;
+            height: 24px;
             stroke: currentColor;
             fill: none;
             stroke-width: 1.8;
@@ -865,39 +911,124 @@
         }
 
         .color-tile {
-            min-height: 38px;
-            border-radius: 999px;
-            gap: 7px;
-            font-size: 11px;
+            min-height: 30px;
+            border-radius: 9px;
+            gap: 5px;
+            font-size: 10px;
             font-weight: 600;
         }
 
         .swatch {
-            width: 14px;
-            height: 14px;
+            width: 11px;
+            height: 11px;
             border-radius: 999px;
             border: 1px solid rgba(0, 0, 0, 0.12);
             flex: 0 0 auto;
         }
 
         .range-control + .range-control {
-            margin-top: 16px;
+            margin-top: 10px;
+        }
+
+        .range-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px 12px;
+        }
+
+        .range-grid .range-control + .range-control {
+            margin-top: 0;
+        }
+
+        .range-grid .slider-label {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .slider-meta {
+            margin-bottom: 5px;
+        }
+
+        .slider-label {
+            margin-bottom: 0;
+            font-size: 11px;
+            line-height: 1.25;
+        }
+
+        .number-input {
+            width: 58px;
+            min-height: 24px;
+            border-radius: 7px;
+            font-size: 11px;
+            padding: 2px 6px;
+        }
+
+        .inline-controls {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            flex: 0 0 auto;
+        }
+
+        .mini-reset {
+            min-height: 24px;
+            padding: 0 7px;
+            border-radius: 7px;
+            background: var(--apple-gray);
+            color: var(--text-primary);
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .slider-thumb {
+            height: 3px;
+        }
+
+        .slider-thumb::-webkit-slider-thumb {
+            width: 16px;
+            height: 16px;
+        }
+
+        .slider-thumb::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
         }
 
         .action-row {
             display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
-            gap: 8px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 6px;
         }
 
         .panel-action {
-            min-height: 38px;
-            border-radius: 999px;
+            min-height: 30px;
+            border-radius: 9px;
             background: var(--apple-gray);
             color: var(--text-primary);
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 600;
             transition: transform 200ms var(--ease-standard), background 200ms var(--ease-standard);
+        }
+
+        .range-control > .panel-action {
+            width: 100%;
+        }
+
+        .panel-section:last-child {
+            position: sticky;
+            bottom: 0;
+            z-index: 2;
+            margin: 0 -12px;
+            padding: 8px 12px 12px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(18px);
+        }
+
+        body.dark-mode .panel-section:last-child {
+            background: rgba(29, 29, 31, 0.92);
         }
 
         .panel-action.primary {
@@ -909,7 +1040,78 @@
             transform: scale(1.02);
         }
 
+        .snapshot-preview {
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(17, 19, 24, 0.58);
+            backdrop-filter: blur(18px);
+        }
+
+        .snapshot-card {
+            width: min(720px, calc(100vw - 48px));
+            max-height: calc(100vh - 48px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(210, 210, 215, 0.72);
+            border-radius: 16px;
+            background: var(--bg-surface);
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+        }
+
+        .snapshot-toolbar {
+            min-height: 44px;
+            padding: 8px 10px 8px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .snapshot-title {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .snapshot-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .snapshot-button {
+            min-height: 28px;
+            padding: 0 10px;
+            border-radius: 8px;
+            background: var(--apple-gray);
+            color: var(--text-primary);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .snapshot-button.primary {
+            background: var(--accent-blue);
+            color: #fff;
+        }
+
+        .snapshot-card img {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: calc(100vh - 116px);
+            object-fit: contain;
+            background: #12151b;
+        }
+
         .history-dock {
+            display: none;
             position: fixed;
             left: 24px;
             bottom: 22px;
@@ -982,11 +1184,11 @@
             }
 
             .shape-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+                grid-template-columns: repeat(5, minmax(0, 1fr));
             }
 
             .color-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+                grid-template-columns: repeat(4, minmax(0, 1fr));
             }
 
             .history-dock {
@@ -1020,43 +1222,6 @@
 
             <div class="panel-content">
                 <div class="panel-section">
-                    <h2 class="panel-section-title" data-i18n="interface">Interface</h2>
-                    <div class="range-control">
-                        <div class="slider-meta"><label class="slider-label" data-i18n="language">Language</label></div>
-                        <div class="segmented-radio">
-                            <label class="interface-option">
-                                <input type="radio" name="language" value="en" checked>
-                                <span class="interface-pill">English</span>
-                            </label>
-                            <label class="interface-option">
-                                <input type="radio" name="language" value="zh">
-                                <span class="interface-pill">中文</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="range-control">
-                        <div class="slider-meta"><label class="slider-label" data-i18n="theme">Theme</label></div>
-                        <div class="segmented-radio">
-                            <label class="interface-option">
-                                <input type="radio" name="theme" value="light" checked>
-                                <span class="interface-pill" data-i18n="light">Light</span>
-                            </label>
-                            <label class="interface-option">
-                                <input type="radio" name="theme" value="dark">
-                                <span class="interface-pill" data-i18n="dark">Dark</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="range-control">
-                        <div class="slider-meta"><label class="slider-label" data-i18n="canvasZoom">Canvas zoom</label><input type="number" id="number-zoom" class="number-input" min="40" max="440" step="5" value="100"></div>
-                        <input type="range" id="input-zoom" min="40" max="440" step="5" value="100" class="slider-thumb">
-                    </div>
-                    <div class="range-control">
-                        <button onclick="resetView()" class="panel-action" data-i18n="resetView">Reset view 100%</button>
-                    </div>
-                </div>
-
-                <div class="panel-section">
                     <h2 class="panel-section-title" data-i18n="rollingMode">Rolling mode</h2>
                     <div class="segmented-radio">
                         <label class="mode-option">
@@ -1081,6 +1246,32 @@
                                 <span data-i18n="internal">Internal</span>
                             </span>
                         </label>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h2 class="panel-section-title" data-i18n="geometry">Geometry</h2>
+                    <div class="range-grid">
+                        <div class="range-control">
+                            <div class="slider-meta"><label class="slider-label" data-i18n="statorSize">Stator R</label><input type="number" id="number-R" class="number-input" min="30" max="300" step="1" value="117"></div>
+                            <input type="range" id="input-R" min="30" max="300" value="117" class="slider-thumb">
+                        </div>
+                        <div class="range-control">
+                            <div class="slider-meta"><label class="slider-label" data-i18n="rotorRadius">Rotor r</label><input type="number" id="number-r" class="number-input" min="10" max="200" step="1" value="43"></div>
+                            <input type="range" id="input-r" min="10" max="200" value="43" class="slider-thumb">
+                        </div>
+                        <div class="range-control">
+                            <div class="slider-meta"><label class="slider-label" data-i18n="penOffset">Pen d</label><input type="number" id="number-d" class="number-input" min="0" max="300" step="1" value="68"></div>
+                            <input type="range" id="input-d" min="0" max="300" value="68" class="slider-thumb">
+                        </div>
+                        <div class="range-control">
+                            <div class="slider-meta"><label class="slider-label" data-i18n="animationSpeed">Speed</label><input type="number" id="number-speed" class="number-input" min="1" max="100" step="1" value="7"></div>
+                            <input type="range" id="input-speed" min="1" max="100" value="7" class="slider-thumb">
+                        </div>
+                        <div class="range-control">
+                            <div class="slider-meta"><label class="slider-label" data-i18n="lineWidth">Line width</label><input type="number" id="number-line-width" class="number-input" min="0.5" max="16" step="0.1" value="1.7"></div>
+                            <input type="range" id="input-line-width" min="0.5" max="16" step="0.1" value="1.7" class="slider-thumb">
+                        </div>
                     </div>
                 </div>
 
@@ -1131,36 +1322,6 @@
                 </div>
 
                 <div class="panel-section">
-                    <h2 class="panel-section-title" data-i18n="rotorShape">Rotor shape</h2>
-                    <div class="shape-grid">
-                        <label class="shape-option">
-                            <input type="radio" name="rotorShape" value="circle">
-                            <span class="shape-tile"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="13"></circle></svg><span data-i18n="circle">Circle</span></span>
-                        </label>
-                        <label class="shape-option">
-                            <input type="radio" name="rotorShape" value="triangle">
-                            <span class="shape-tile"><svg viewBox="0 0 40 40"><path d="M20 7l15 26H5z"></path></svg><span data-i18n="triangle">Triangle</span></span>
-                        </label>
-                        <label class="shape-option">
-                            <input type="radio" name="rotorShape" value="square" checked>
-                            <span class="shape-tile"><svg viewBox="0 0 40 40"><rect x="9" y="9" width="22" height="22" rx="2"></rect></svg><span data-i18n="square">Square</span></span>
-                        </label>
-                        <label class="shape-option">
-                            <input type="radio" name="rotorShape" value="pentagon">
-                            <span class="shape-tile"><svg viewBox="0 0 40 40"><path d="M20 6l14 10-5 17H11L6 16z"></path></svg><span data-i18n="pentagon">Pentagon</span></span>
-                        </label>
-                        <label class="shape-option">
-                            <input type="radio" name="rotorShape" value="hexagon">
-                            <span class="shape-tile"><svg viewBox="0 0 40 40"><path d="M12 8h16l8 12-8 12H12L4 20z"></path></svg><span data-i18n="hexagon">Hexagon</span></span>
-                        </label>
-                        <label class="shape-option">
-                            <input type="radio" name="rotorShape" value="octagon">
-                            <span class="shape-tile"><svg viewBox="0 0 40 40"><path d="M14 6h12l8 8v12l-8 8H14l-8-8V14z"></path></svg><span data-i18n="octagon">Octagon</span></span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="panel-section">
                     <h2 class="panel-section-title" data-i18n="color">Color</h2>
                     <div class="color-grid">
                         <label class="color-option"><input type="radio" name="colorScheme" value="classic" checked><span class="color-tile"><i class="swatch" style="background:#2563eb"></i><span data-i18n="classic">Classic</span></span></label>
@@ -1178,26 +1339,44 @@
                 </div>
 
                 <div class="panel-section">
-                    <h2 class="panel-section-title" data-i18n="geometry">Geometry</h2>
-                    <div class="range-control">
-                        <div class="slider-meta"><label class="slider-label" data-i18n="statorSize">Stator size (R)</label><input type="number" id="number-R" class="number-input" min="30" max="300" step="1" value="117"></div>
-                        <input type="range" id="input-R" min="30" max="300" value="117" class="slider-thumb">
+                    <h2 class="panel-section-title" data-i18n="interface">Interface</h2>
+                    <div class="interface-grid">
+                        <div class="micro-control">
+                            <span class="micro-control-label" data-i18n="language">Language</span>
+                            <div class="segmented-radio">
+                                <label class="interface-option">
+                                    <input type="radio" name="language" value="en" checked>
+                                    <span class="interface-pill">EN</span>
+                                </label>
+                                <label class="interface-option">
+                                    <input type="radio" name="language" value="zh">
+                                    <span class="interface-pill">中</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="micro-control">
+                            <span class="micro-control-label" data-i18n="theme">Theme</span>
+                            <div class="segmented-radio">
+                                <label class="interface-option">
+                                    <input type="radio" name="theme" value="light">
+                                    <span class="interface-pill" data-i18n="light">Light</span>
+                                </label>
+                                <label class="interface-option">
+                                    <input type="radio" name="theme" value="dark" checked>
+                                    <span class="interface-pill" data-i18n="dark">Dark</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                     <div class="range-control">
-                        <div class="slider-meta"><label class="slider-label" data-i18n="rotorRadius">Rotor radius (r)</label><input type="number" id="number-r" class="number-input" min="10" max="200" step="1" value="43"></div>
-                        <input type="range" id="input-r" min="10" max="200" value="43" class="slider-thumb">
-                    </div>
-                    <div class="range-control">
-                        <div class="slider-meta"><label class="slider-label" data-i18n="penOffset">Pen offset (d)</label><input type="number" id="number-d" class="number-input" min="0" max="300" step="1" value="68"></div>
-                        <input type="range" id="input-d" min="0" max="300" value="68" class="slider-thumb">
-                    </div>
-                    <div class="range-control">
-                        <div class="slider-meta"><label class="slider-label" data-i18n="animationSpeed">Animation speed</label><input type="number" id="number-speed" class="number-input" min="1" max="100" step="1" value="7"></div>
-                        <input type="range" id="input-speed" min="1" max="100" value="7" class="slider-thumb">
-                    </div>
-                    <div class="range-control">
-                        <div class="slider-meta"><label class="slider-label" data-i18n="lineWidth">Line width</label><input type="number" id="number-line-width" class="number-input" min="0.5" max="16" step="0.1" value="1.7"></div>
-                        <input type="range" id="input-line-width" min="0.5" max="16" step="0.1" value="1.7" class="slider-thumb">
+                        <div class="slider-meta">
+                            <label class="slider-label" data-i18n="canvasZoom">Canvas zoom</label>
+                            <span class="inline-controls">
+                                <input type="number" id="number-zoom" class="number-input" min="40" max="440" step="5" value="100">
+                                <button onclick="resetView()" class="mini-reset" title="Reset view 100%">100%</button>
+                            </span>
+                        </div>
+                        <input type="range" id="input-zoom" min="40" max="440" step="5" value="100" class="slider-thumb">
                     </div>
                 </div>
 
@@ -1205,7 +1384,6 @@
                     <div class="action-row">
                         <button onclick="handleReset()" class="panel-action" data-i18n="reset">Reset</button>
                         <button onclick="handleRandomize()" class="panel-action" data-i18n="random">Random</button>
-                        <button onclick="saveToHistory()" class="panel-action" data-i18n="save">Save</button>
                         <button onclick="takeSnapshot()" class="panel-action" data-i18n="camera">Camera</button>
                         <button onclick="generateInstant()" class="panel-action primary" data-i18n="instant">Instant</button>
                     </div>
@@ -1243,10 +1421,10 @@
         let state = {
             mode: 'epitrochoid', 
             statorShape: 'heptagon', 
-            rotorShape: 'square',  
+            rotorShape: 'circle',
             colorScheme: 'classic',
             language: 'en',
-            theme: 'light',
+            theme: 'dark',
             R: 117, // Stator Size
             r: 43,  // Rotor Radius
             d: 68,  // Pen distance
@@ -1340,16 +1518,19 @@
                 fire: 'Fire',
                 ice: 'Ice',
                 geometry: 'Geometry',
-                statorSize: 'Stator size (R)',
-                rotorRadius: 'Rotor radius (r)',
-                penOffset: 'Pen offset (d)',
-                animationSpeed: 'Animation speed',
-                lineWidth: 'Line width',
+                statorSize: 'Stator R',
+                rotorRadius: 'Rotor r',
+                penOffset: 'Pen d',
+                animationSpeed: 'Speed',
+                lineWidth: 'Line',
                 reset: 'Reset',
                 random: 'Random',
                 save: 'Save',
                 camera: 'Camera',
                 instant: 'Instant',
+                snapshot: 'Share card',
+                download: 'Download',
+                close: 'Close',
                 resetView: 'Reset view 100%',
                 history: 'History',
                 clear: 'Clear',
@@ -1396,16 +1577,19 @@
                 fire: '火焰',
                 ice: '冰蓝',
                 geometry: '几何',
-                statorSize: '定轨尺寸 (R)',
-                rotorRadius: '动轮半径 (r)',
-                penOffset: '画笔偏移 (d)',
-                animationSpeed: '动画速度',
-                lineWidth: '线条粗细',
+                statorSize: '定轨 R',
+                rotorRadius: '动轮 r',
+                penOffset: '画笔 d',
+                animationSpeed: '速度',
+                lineWidth: '线宽',
                 reset: '重置',
                 random: '随机',
                 save: '保存',
                 camera: '拍照',
                 instant: '瞬间完成',
+                snapshot: '分享卡片',
+                download: '下载',
+                close: '关闭',
                 resetView: '视角 100%',
                 history: '历史',
                 clear: '清空',
@@ -1491,6 +1675,10 @@
                 if (!Array.isArray(parsed)) return;
                 state.history = parsed
                     .filter(item => item && item.id && item.img && item.config)
+                    .map(item => ({
+                        ...item,
+                        config: { ...item.config, rotorShape: 'circle' }
+                    }))
                     .slice(0, MAX_HISTORY_ITEMS);
             } catch (error) {
                 console.warn('Unable to load drawing history', error);
@@ -1671,7 +1859,6 @@
             resetPath();
         }
         function handleReset() {
-            if (state.pathPoints.length > 200) saveToHistory();
             resetPath();
         }
 
@@ -1684,8 +1871,6 @@
         }
 
         function handleRandomize() {
-            if (state.pathPoints.length > 200) saveToHistory();
-            
             state.R = Math.floor(Math.random() * 100) + 40;
             state.r = Math.floor(Math.random() * 50) + 15;
             state.d = Math.floor(Math.random() * 100) + 10;
@@ -1696,8 +1881,7 @@
             
             const shapes = ['circle', 'ellipse', 'track', 'triangle', 'square', 'pentagon', 'hexagon', 'heptagon', 'octagon', 'diamond'];
             state.statorShape = shapes[Math.floor(Math.random() * shapes.length)]; 
-            const rotorShapes = ['circle', 'triangle', 'square', 'pentagon', 'hexagon', 'octagon'];
-            state.rotorShape = rotorShapes[Math.floor(Math.random() * rotorShapes.length)];
+            state.rotorShape = 'circle';
             
             if (state.statorShape === 'ellipse') buildEllipseLUT();
 
@@ -2031,25 +2215,7 @@
             ctx.strokeStyle = '#60a5fa';
             ctx.lineWidth = 1;
             
-            if (state.rotorShape === 'circle') {
-                ctx.arc(0, 0, state.r, 0, Math.PI * 2);
-            } else {
-                let rsides = 3;
-                if (state.rotorShape === 'square') rsides = 4;
-                if (state.rotorShape === 'pentagon') rsides = 5;
-                if (state.rotorShape === 'hexagon') rsides = 6;
-                if (state.rotorShape === 'octagon') rsides = 8;
-                const rStep = (2 * Math.PI) / rsides;
-                
-                ctx.moveTo(state.r, 0);
-                for (let i = 1; i <= rsides; i++) {
-                    ctx.lineTo(state.r * Math.cos(i * rStep), state.r * Math.sin(i * rStep));
-                }
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgba(96, 165, 250, 0.3)';
-                ctx.arc(0, 0, state.r, 0, Math.PI * 2);
-            }
+            ctx.arc(0, 0, state.r, 0, Math.PI * 2);
             
             ctx.stroke();
             ctx.fillStyle = 'rgba(96, 165, 250, 0.1)';
@@ -2210,7 +2376,7 @@
 
         function drawFrame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = state.theme === 'dark' ? '#0b0b0d' : '#ffffff';
+            ctx.fillStyle = state.theme === 'dark' ? '#12151b' : '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             const s = calculateState(state.totalDistance);
             syncPathLayer();
@@ -2277,17 +2443,292 @@
             outCanvas.height = Math.max(1, Math.round(sourceHeight * scale));
             const outCtx = outCanvas.getContext('2d');
 
-            outCtx.fillStyle = state.theme === 'dark' ? '#0b0b0d' : '#ffffff';
+            outCtx.fillStyle = state.theme === 'dark' ? '#12151b' : '#ffffff';
             outCtx.fillRect(0, 0, outCanvas.width, outCanvas.height);
             outCtx.drawImage(pathCanvas, 0, 0, outCanvas.width, outCanvas.height);
             return outCanvas.toDataURL('image/png');
         }
 
-        function takeSnapshot() {
+        function getShareUrl() {
+            if (location.protocol === 'http:' || location.protocol === 'https:') {
+                return `${location.origin}${location.pathname}`;
+            }
+            return location.href.split('#')[0].split('?')[0];
+        }
+
+        function loadImage(src, crossOrigin = null) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                if (crossOrigin) img.crossOrigin = crossOrigin;
+                img.onload = () => resolve(img);
+                img.onerror = reject;
+                img.src = src;
+            });
+        }
+
+        function drawRoundRect(ctx, x, y, w, h, r) {
+            const radius = Math.min(r, w / 2, h / 2);
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.arcTo(x + w, y, x + w, y + h, radius);
+            ctx.arcTo(x + w, y + h, x, y + h, radius);
+            ctx.arcTo(x, y + h, x, y, radius);
+            ctx.arcTo(x, y, x + w, y, radius);
+            ctx.closePath();
+        }
+
+        function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 3) {
+            const words = String(text).split(/\s+/);
+            let line = '';
+            let lines = [];
+
+            words.forEach(word => {
+                const test = line ? `${line} ${word}` : word;
+                if (ctx.measureText(test).width > maxWidth && line) {
+                    lines.push(line);
+                    line = word;
+                } else {
+                    line = test;
+                }
+            });
+            if (line) lines.push(line);
+            lines = lines.slice(0, maxLines);
+
+            lines.forEach((item, index) => {
+                const suffix = index === maxLines - 1 && words.length > 1 && lines.length === maxLines ? '' : '';
+                ctx.fillText(item + suffix, x, y + index * lineHeight);
+            });
+        }
+
+        function drawCardMetric(ctx, label, value, x, y, w) {
+            ctx.fillStyle = 'rgba(245, 245, 247, 0.62)';
+            ctx.font = '600 22px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillText(label, x, y);
+            ctx.fillStyle = '#f5f5f7';
+            ctx.font = '700 30px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillText(value, x, y + 38, w);
+        }
+
+        function getPathBounds(points) {
+            if (!points.length) return null;
+
+            let minX = Infinity;
+            let minY = Infinity;
+            let maxX = -Infinity;
+            let maxY = -Infinity;
+
+            points.forEach(point => {
+                if (!Number.isFinite(point.x) || !Number.isFinite(point.y)) return;
+                minX = Math.min(minX, point.x);
+                minY = Math.min(minY, point.y);
+                maxX = Math.max(maxX, point.x);
+                maxY = Math.max(maxY, point.y);
+            });
+
+            if (!Number.isFinite(minX)) return null;
+            return {
+                minX,
+                minY,
+                maxX,
+                maxY,
+                width: Math.max(1, maxX - minX),
+                height: Math.max(1, maxY - minY),
+                cx: (minX + maxX) / 2,
+                cy: (minY + maxY) / 2
+            };
+        }
+
+        function drawCenteredArtwork(ctx, box) {
+            const points = state.pathPoints;
+            const bounds = getPathBounds(points);
+
+            ctx.save();
+            drawRoundRect(ctx, box.x, box.y, box.w, box.h, 24);
+            ctx.clip();
+            ctx.fillStyle = state.theme === 'dark' ? '#12151b' : '#ffffff';
+            ctx.fillRect(box.x, box.y, box.w, box.h);
+
+            if (!bounds || points.length < 2) {
+                ctx.restore();
+                return;
+            }
+
+            const targetWidth = box.w * 0.78;
+            const scaleByWidth = targetWidth / bounds.width;
+            const maxHeight = box.h * 0.84;
+            const scale = Math.min(scaleByWidth, maxHeight / bounds.height);
+            const centerX = box.x + box.w / 2;
+            const centerY = box.y + box.h / 2;
+
+            ctx.translate(centerX, centerY);
+            ctx.scale(scale, scale);
+            ctx.translate(-bounds.cx, -bounds.cy);
+            ctx.lineWidth = state.lineWidth / scale;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+
+            if (['classic', 'mono'].includes(state.colorScheme)) {
+                ctx.beginPath();
+                ctx.strokeStyle = getPathColor(0, 0, state.colorScheme);
+                ctx.moveTo(points[0].x, points[0].y);
+                for (let i = 1; i < points.length; i++) {
+                    ctx.lineTo(points[i].x, points[i].y);
+                }
+                ctx.stroke();
+            } else {
+                const batch = Math.max(12, Math.floor(points.length / 600));
+                for (let i = 1; i < points.length; i += batch) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = getPathColor(i, 0, state.colorScheme);
+                    ctx.moveTo(points[i - 1].x, points[i - 1].y);
+                    const end = Math.min(i + batch, points.length);
+                    for (let j = i; j < end; j++) {
+                        ctx.lineTo(points[j].x, points[j].y);
+                    }
+                    ctx.stroke();
+                }
+            }
+
+            ctx.restore();
+        }
+
+        async function createShareCardDataUrl() {
+            const shareUrl = getShareUrl();
+            const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(shareUrl)}&size=240&margin=1&dark=111318&light=ffffff`;
+            let qrImage = null;
+
+            try {
+                qrImage = await loadImage(qrUrl, 'anonymous');
+            } catch (error) {
+                qrImage = null;
+            }
+
+            const card = document.createElement('canvas');
+            card.width = 1200;
+            card.height = 1600;
+            const c = card.getContext('2d');
+
+            const bg = c.createLinearGradient(0, 0, 1200, 1600);
+            bg.addColorStop(0, '#171b23');
+            bg.addColorStop(0.58, '#10131a');
+            bg.addColorStop(1, '#20242d');
+            c.fillStyle = bg;
+            c.fillRect(0, 0, card.width, card.height);
+
+            c.fillStyle = 'rgba(0, 102, 204, 0.22)';
+            c.beginPath();
+            c.arc(1040, 160, 260, 0, Math.PI * 2);
+            c.fill();
+            c.fillStyle = 'rgba(56, 189, 248, 0.12)';
+            c.beginPath();
+            c.arc(140, 1390, 300, 0, Math.PI * 2);
+            c.fill();
+
+            c.fillStyle = '#f5f5f7';
+            c.font = '800 74px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            c.fillText('Spinning Drawer', 84, 128);
+            c.fillStyle = 'rgba(245, 245, 247, 0.68)';
+            c.font = '500 28px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            c.fillText('Parametric rolling curves, captured as a share card', 88, 178);
+
+            drawRoundRect(c, 64, 220, 1072, 990, 34);
+            c.fillStyle = 'rgba(255, 255, 255, 0.055)';
+            c.fill();
+            c.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+            c.lineWidth = 2;
+            c.stroke();
+
+            const artBox = { x: 96, y: 252, w: 1008, h: 926 };
+            drawRoundRect(c, artBox.x, artBox.y, artBox.w, artBox.h, 24);
+            c.fillStyle = state.theme === 'dark' ? '#12151b' : '#ffffff';
+            c.fill();
+            drawCenteredArtwork(c, artBox);
+
+            const modeLabel = state.mode === 'epitrochoid' ? t('external') : t('internal');
+            const summary = `${modeLabel} · ${t(state.statorShape)} · R ${state.R} · r ${state.r} · d ${state.d} · ${state.lineWidth}px`;
+            c.fillStyle = 'rgba(245, 245, 247, 0.58)';
+            c.font = '700 22px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            c.fillText('PARAMS', 86, 1270);
+            c.fillStyle = '#f5f5f7';
+            c.font = '700 32px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            c.fillText(summary, 86, 1314, 740);
+
+            drawRoundRect(c, 872, 1238, 228, 228, 24);
+            c.fillStyle = '#f5f5f7';
+            c.fill();
+
+            if (qrImage) {
+                c.drawImage(qrImage, 898, 1264, 176, 176);
+            } else {
+                c.fillStyle = '#111318';
+                c.font = '800 24px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                c.fillText('Open link', 902, 1310);
+                c.font = '500 17px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                drawWrappedText(c, shareUrl, 902, 1348, 170, 24, 3);
+            }
+
+            c.fillStyle = 'rgba(245, 245, 247, 0.64)';
+            c.font = '600 19px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            c.fillText('Scan to open', 914, 1496);
+            c.font = '500 20px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            drawWrappedText(c, shareUrl, 86, 1480, 650, 28, 2);
+
+            return card.toDataURL('image/png');
+        }
+
+        function triggerSnapshotDownload(dataUrl, filename) {
             const link = document.createElement('a');
-            link.download = `spinning-drawer-${Date.now()}.png`;
-            link.href = createArtworkImageDataUrl();
-            link.click();
+            link.download = filename;
+            link.href = dataUrl;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            try {
+                link.click();
+            } catch (error) {
+                const preview = window.open('', '_blank');
+                if (preview) {
+                    preview.document.title = filename;
+                    preview.document.body.style.margin = '0';
+                    preview.document.body.style.background = state.theme === 'dark' ? '#12151b' : '#ffffff';
+                    preview.document.body.innerHTML = `<img src="${dataUrl}" alt="Spinning Drawer snapshot" style="display:block;max-width:100%;height:auto;margin:auto;">`;
+                }
+            } finally {
+                link.remove();
+            }
+        }
+
+        function showSnapshotPreview(dataUrl, filename) {
+            document.querySelector('.snapshot-preview')?.remove();
+
+            const overlay = document.createElement('div');
+            overlay.className = 'snapshot-preview';
+            overlay.innerHTML = `
+                <div class="snapshot-card" role="dialog" aria-modal="true" aria-label="${t('snapshot')}">
+                    <div class="snapshot-toolbar">
+                        <h2 class="snapshot-title">${t('snapshot')}</h2>
+                        <div class="snapshot-actions">
+                            <button type="button" class="snapshot-button primary" data-action="download">${t('download')}</button>
+                            <button type="button" class="snapshot-button" data-action="close">${t('close')}</button>
+                        </div>
+                    </div>
+                    <img src="${dataUrl}" alt="${t('snapshot')}">
+                </div>
+            `;
+
+            overlay.addEventListener('click', (event) => {
+                const action = event.target?.dataset?.action;
+                if (action === 'download') triggerSnapshotDownload(dataUrl, filename);
+                if (action === 'close' || event.target === overlay) overlay.remove();
+            });
+
+            document.body.appendChild(overlay);
+        }
+
+        async function takeSnapshot() {
+            const dataUrl = await createShareCardDataUrl();
+            const filename = `spinning-drawer-${Date.now()}.png`;
+            triggerSnapshotDownload(dataUrl, filename);
+            showSnapshotPreview(dataUrl, filename);
         }
 
         function saveToHistory() {
@@ -2330,7 +2771,7 @@
                 <div class="history-card" onclick="loadHistory(${h.id})">
                     <img src="${h.img}" alt="Saved drawing preview">
                     <div class="history-card-meta">
-                        ${h.config.statorShape} / ${h.config.rotorShape}
+                        ${h.config.statorShape} / circle
                     </div>
                 </div>
             `).join('');
@@ -2340,11 +2781,11 @@
             const h = state.history.find(x => x.id === id);
             if (!h) return;
             
-            const { R, r, d, mode, statorShape, rotorShape, colorScheme, lineWidth = 1.5, zoom = 1, panX = 0, panY = 0 } = h.config;
+            const { R, r, d, mode, statorShape, colorScheme, lineWidth = 1.5, zoom = 1, panX = 0, panY = 0 } = h.config;
             state.R = R; state.r = r; state.d = d;
             state.mode = mode;
             state.statorShape = statorShape;
-            state.rotorShape = rotorShape;
+            state.rotorShape = 'circle';
             state.colorScheme = colorScheme;
             state.lineWidth = lineWidth;
             state.zoom = zoom;

@@ -1,17 +1,35 @@
-# 多形状旋轮线可视化 / Polygonal Spirograph Visualizer
+# Spinning Drawer
 
-一个交互式的几何可视化工具，支持多种形状（圆形、椭圆、多边形）的旋轮线绘制，可创造出无限多样的美丽几何图案。
+An interactive canvas tool for drawing spirograph-inspired rolling curves with circular, elliptical, track, and polygonal stators.
 
-An interactive geometric visualization tool for drawing spirograph patterns with various shapes (circles, ellipses, polygons), creating infinitely diverse beautiful geometric patterns.
+[Live Demo](https://holynova.github.io/spinning-drawer/)
 
-**🎨 [在线演示 / Live Demo](https://holynova.github.io/spinning-drawer/)**
+![Latest Spinning Drawer UI](screenshots/latest-version.png)
 
-![Spirograph Pattern](screenshots/completed_pattern.png)
+## Features
 
----
+- External and internal rolling modes.
+- Circle, ellipse, track, triangle, square, pentagon, hexagon, heptagon, octagon, and diamond stator shapes.
+- Adjustable stator radius, rotor radius, pen offset, animation speed, line width, pan, and zoom.
+- Compact floating parameter panel with dark mode by default.
+- Multiple color palettes, including classic, rainbow, neon, aurora, fire, and ice.
+- Instant render mode for quickly completing a drawing.
+- Camera tool that generates an elegant share card with the project name, artwork, parameter summary, page link, and QR code.
 
-**Features / 功能特点:**
-- 🔵 External/Internal modes (外旋/内旋模式)
-- 🎨 7 color schemes (7种颜色方案)
-- � Multiple shapes support (多种形状支持)
-- ⚡ Instant complete & history (瞬间完成 & 历史记录)
+## Usage
+
+Open `index.html` directly in a browser, or serve the folder locally:
+
+```bash
+python -m http.server 8765 --bind 127.0.0.1
+```
+
+Then visit:
+
+```text
+http://127.0.0.1:8765/index.html
+```
+
+## Notes
+
+The app is a single-file HTML/CSS/JavaScript project. The share-card QR code is generated from the current page URL, so use the hosted demo URL when creating cards intended for others.
