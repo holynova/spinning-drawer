@@ -1,0 +1,7 @@
+.git/
+.github/
+.wrangler/
+.playwright-cli/
+README.md
+REFERENCE_MEASUREMENTS.md
+screenshots/

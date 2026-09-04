@@ -4,6 +4,8 @@ An interactive canvas tool for drawing spirograph-inspired rolling curves with c
 
 [Live Demo](https://holynova.github.io/spinning-drawer/)
 
+[Cloudflare Demo](https://spinning-drawer.xiaosang.cc/)
+
 ![Latest Spinning Drawer UI](screenshots/latest-version.png)
 
 ## Features
@@ -32,4 +34,4 @@ http://127.0.0.1:8765/index.html
 
 ## Notes
 
-The app is a single-file HTML/CSS/JavaScript project. The share-card QR code is generated from the current page URL, so use the hosted demo URL when creating cards intended for others.
+The app is a single-file HTML/CSS/JavaScript project. It is published as root-directory static assets; no build step is required. The share-card QR code is generated from the current page URL, so use the hosted demo URL when creating cards intended for others.
