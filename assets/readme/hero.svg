@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="360" viewBox="0 0 1200 360"
+     role="img" aria-labelledby="title desc">
+  <title id="title">旋转万花尺 Spinning Drawer — 万花尺轮线绘图板</title>
+  <desc id="desc">深蓝底标题：旋转万花尺；右侧是一朵蓝色轮线花：八个旋转椭圆交织成的万花尺图案，中间有定轮虚线圆与动轮小圆。</desc>
+
+  <rect width="1200" height="360" rx="26" fill="#0b0e14"/>
+
+  <g id="deco" opacity="0.5">
+    <circle cx="706" cy="56" r="24" fill="#141a26"/>
+    <circle cx="64" cy="326" r="12" fill="#141a26"/>
+  </g>
+
+  <g id="title-block" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    <text x="56" y="62" font-size="19" letter-spacing="3" fill="#6ea8ff">万花尺 · SPIROGRAPH · 轮线绘图</text>
+    <text x="56" y="130" font-size="56" font-weight="700" fill="#f0f4ff">旋转万花尺</text>
+    <text x="56" y="170" font-size="22" fill="#6ea8ff">SPINNING DRAWER — 万花尺轮线绘图板</text>
+    <text x="56" y="206" font-size="19" fill="#8fa3c8">定轮滚动生花：10 种定轮形状 × 11 套配色，一键画完。</text>
+    <g id="chips" font-size="18" fill="#dbe4f5" text-anchor="middle">
+      <g><rect x="56" y="238" width="122" height="36" rx="18" fill="#141a26" stroke="#2a3448" stroke-width="1.5"/><text x="117" y="262">10 种定轮</text></g>
+      <g><rect x="190" y="238" width="122" height="36" rx="18" fill="#141a26" stroke="#2a3448" stroke-width="1.5"/><text x="251" y="262">11 套配色</text></g>
+      <g><rect x="324" y="238" width="158" height="36" rx="18" fill="#141a26" stroke="#2a3448" stroke-width="1.5"/><text x="403" y="262">内外旋双模式</text></g>
+      <g><rect x="494" y="238" width="104" height="36" rx="18" fill="#141a26" stroke="#2a3448" stroke-width="1.5"/><text x="546" y="262">单文件</text></g>
+    </g>
+  </g>
+
+  <g id="rosette-card" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    <rect x="800" y="44" width="344" height="272" rx="16" fill="#141a26" stroke="#2a3448" stroke-width="1.5"/>
+    <text x="828" y="80" font-size="18" fill="#8fa3c8">七边形定轮 · 外旋轮线</text>
+    <g id="rosette" transform="translate(972 182)" fill="none" stroke="#2f7bff" stroke-width="1.5" opacity="0.85">
+      <ellipse rx="96" ry="34"/>
+      <ellipse rx="96" ry="34" transform="rotate(22.5)"/>
+      <ellipse rx="96" ry="34" transform="rotate(45)"/>
+      <ellipse rx="96" ry="34" transform="rotate(67.5)"/>
+      <ellipse rx="96" ry="34" transform="rotate(90)"/>
+      <ellipse rx="96" ry="34" transform="rotate(112.5)"/>
+      <ellipse rx="96" ry="34" transform="rotate(135)"/>
+      <ellipse rx="96" ry="34" transform="rotate(157.5)"/>
+    </g>
+    <circle cx="972" cy="182" r="58" fill="none" stroke="#5a6b8a" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <circle cx="1030" cy="182" r="18" fill="none" stroke="#8fa3c8" stroke-width="1.5"/>
+    <circle cx="1048" cy="182" r="4" fill="#e5484d"/>
+    <text x="828" y="304" font-size="18" fill="#8fa3c8">定轮 R 117 · 动轮 r 43 · 笔距 68</text>
+  </g>
+</svg>
